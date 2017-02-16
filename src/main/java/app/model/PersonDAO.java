@@ -17,10 +17,12 @@ import java.util.ArrayList;
 
 public class PersonDAO{
   private static PersonDAO instance = null;
-  private HikariConfig config = null;
-  private HikariDataSource dataSource = null;
+  private static HikariConfig config = null;
+  private static HikariDataSource dataSource = null;
 
-  private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS persons (id serial primary key, name varchar(255))";
+  private static final String COMMAND_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS persons (id serial primary key, name varchar(255))";
+  private static final String COMMAND_CREATE_PERSON = "INSERT INTO persons (name) VALUES ('%s')";
+  private static final String COMMAND_DELETE_PERSON = "DELETE FROM persons WHERE id=%d";
 
   protected PersonDAO(){
     config = new  HikariConfig();
@@ -36,23 +38,21 @@ public class PersonDAO{
     return instance;
   }
 
-  public void createPerson(String name) throws Exception{
-    Connection connection = dataSource.getConnection();
-    Statement stmt = connection.createStatement();
-    stmt.executeUpdate(CREATE_TABLE_SQL);
+  public void deletePerson(int id) throws Exception{
+    Statement stmt = generateSqlStatement();
+    System.out.println("going to delete: " + id);
+    String deleteSql = String.format(COMMAND_DELETE_PERSON, id);
+    stmt.executeUpdate(deleteSql);
+  }
 
-    // insert
-    System.out.println("going to add name: " + name);
-    String insertSql = "INSERT INTO persons (name) VALUES ('%s')";
-    insertSql = String.format(insertSql, name);
+  public void createPerson(String name) throws Exception{
+    Statement stmt = generateSqlStatement();
+    String insertSql = String.format(COMMAND_CREATE_PERSON, name);
     stmt.executeUpdate(insertSql);
   }
 
   public ArrayList<PersonDTO> getPeople() throws Exception{
-    Connection connection = dataSource.getConnection();
-    Statement stmt = connection.createStatement();
-    stmt.executeUpdate(CREATE_TABLE_SQL);
-
+    Statement stmt = generateSqlStatement();
     ResultSet rs = stmt.executeQuery("SELECT id, name FROM persons");
     ArrayList<PersonDTO> output = new ArrayList<PersonDTO>();
     while (rs.next()) {
@@ -60,5 +60,12 @@ public class PersonDAO{
     }
 
     return output;
+  }
+
+  private static Statement generateSqlStatement() throws Exception{
+    Connection connection = dataSource.getConnection();
+    Statement stmt = connection.createStatement();
+    stmt.executeUpdate(COMMAND_CREATE_TABLE);
+    return stmt;
   }
 }

@@ -19,6 +19,13 @@ homeworkApp.factory("personsFactory", ['$http', function($http){
     });
   };
 
+  personsFactory.deletePerson = function(id){
+    return $http({
+      method: "delete",
+      url: "/persons?id="+id,
+    });
+  };
+
   return personsFactory;
 }]);
 
@@ -50,7 +57,18 @@ homeworkApp.controller('PeopleController', ['$scope', 'personsFactory', function
         $scope.newName = "";
       }, function errorCallback(response){
         setErrorMsg("Due to a technical error we were unable to " +
-          "retrieve the pricing bands.");
+          "create a new person.");
+      });
+  };
+
+  $scope.deletePerson = function(personId){
+    personsFactory.deletePerson(personId)
+      .then(function successCallback(response){
+        // update list
+        $scope.refreshPeople();
+      }, function errorCallback(response){
+        setErrorMsg("Due to a technical error we were unable to " +
+          "delete the person.");
       });
   };
 
@@ -60,7 +78,7 @@ homeworkApp.controller('PeopleController', ['$scope', 'personsFactory', function
         $scope.people = response.data;
       }, function errorCallback(response){
         setErrorMsg("Due to a technical error we were unable to " +
-          "retrieve the name from the database.");
+          "retrieve the names from the database.");
       });
   };
 

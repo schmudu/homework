@@ -113,8 +113,22 @@ public class Main {
       Map<String, Object> model = new HashMap<>();
       try {
         String name = req.queryParams("name"); 
-        System.out.println("data: " + name + " body: " + req.body() + " data: " + req.attribute("data") + " all attrs: " + req.attributes());
         personDao.createPerson(name);
+        res.status(200);
+        return "{\"status\":\"succeed\"}";
+      } catch (Exception e) {
+        res.status(500);
+        return "{\"status\":\"fail\"}";
+      }
+    });
+
+    // DELETE /person/:id
+    delete(PERSONS_URL, (req, res) -> {
+        res.type("application/json");
+      Map<String, Object> model = new HashMap<>();
+      try {
+        int id = Integer.parseInt(req.queryParams("id")); 
+        personDao.deletePerson(id);
         res.status(200);
         return "{\"status\":\"succeed\"}";
       } catch (Exception e) {
