@@ -36,7 +36,10 @@
                 </button>
               </form>
               <br/>
-              <table class="table table-striped">
+              <div class="alert alert-info" ng-show="!people.length">
+                Enter a name and click "Create Person".
+              </div>
+              <table class="table table-striped" ng-show="people.length">
                 <tr ng-repeat="person in people | orderBy:'name'">
                   <td class="col-md-6"> {{person.name}} </td>
                   <td class="col-md-6 text-right"> 
