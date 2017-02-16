@@ -72,6 +72,10 @@ homeworkApp.controller('PeopleController', ['$scope', 'personsFactory', function
       });
   };
 
+  $scope.editPerson = function(personId, personName){
+      $("#editPersonModal").modal("show");
+  };
+
   $scope.refreshPeople = function(){
     personsFactory.getPeople()
       .then (function successCallback(response){

@@ -24,6 +24,7 @@
           </div>
         </div>
         <div class="testContainer" ng-app="homeworkApp" ng-controller="PeopleController" ng-init="init()">
+          <#include "edit_person.ftl">
           <div class="rows">
             <div class="col-md-11 col-md-offset-1">
               <form class="form-inline">
@@ -39,6 +40,9 @@
                 <tr ng-repeat="person in people | orderBy:'name'">
                   <td class="col-md-6"> {{person.name}} </td>
                   <td class="col-md-6 text-right"> 
+                    <button type="submit" class="btn btn-default" ng-click="editPerson(person.id)">
+                      Delete
+                    </button>
                     <button type="submit" class="btn btn-warning" ng-click="deletePerson(person.id)">
                       Delete
                     </button>
