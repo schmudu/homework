@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import spark.ModelAndView;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.model.CredentialManager;
+import app.model.*;
 import static app.model.Routes.*;
 
 import static spark.Spark.*;
@@ -20,6 +21,10 @@ public class Main {
 
   public static void main(String[] args) {
     CredentialManager credentialManager = CredentialManager.getInstance();
+    PersonDAO personDao = PersonDAO.getInstance();
+
+    // JSON
+    Gson gson = new Gson();
 
     port(Integer.valueOf(System.getenv("PORT")));
     staticFileLocation("/public");
@@ -112,6 +117,7 @@ public class Main {
       }
     }, new FreeMarkerEngine());
 
+/*
     get("/persons", (req, res) -> {
       //res.type("application/json");
       //return "{\"message\":5}";
@@ -133,6 +139,20 @@ public class Main {
         return new ModelAndView(attributes, "error.ftl");
       }
     });
+*/
+    get("/persons", (req, res) -> {
+      Map<String, Object> model = new HashMap<>();
+      try {
+        //res.type("application/json");
+        //return "{\"message\":5}";
+        ArrayList<PersonDTO> people = personDao.getPeople();
+        res.type("application/json");
+        return people;
+      } catch (Exception e) {
+        return null;
+      }
+    }, gson::toJson);
+
   }
 
 }
