@@ -26,8 +26,11 @@ public class Main {
 
     get("/hello", (req, res) -> {
       RelativisticModel.select();
-      Amount<Mass> m = Amount.valueOf("12 GeV").to(KILOGRAM);
-      return "E=mc^2: 12 GeV = " + m.toString();
+
+      String energy = System.getenv().get("ENERGY");
+
+      Amount<Mass> m = Amount.valueOf(energy).to(KILOGRAM);
+      return "E=mc^2: " + energy + " = " + m.toString();
     });
 
     get("/", (request, response) -> {
@@ -63,6 +66,27 @@ public class Main {
       }
     }, new FreeMarkerEngine());
 
+    get("/persons", (req, res) -> {
+      //res.type("application/json");
+      //return "{\"message\":5}";
+      Map<String, Object> attributes = new HashMap<>();
+      try(Connection connection = dataSource.getConnection()) {
+        Statement stmt = connection.createStatement();
+        stmt.executeUpdate("CREATE TABLE IF NOT EXISTS persons (name string)");
+        ResultSet rs = stmt.executeQuery("SELECT name FROM persons");
+
+        ArrayList<String> output = new ArrayList<String>();
+        while (rs.next()) {
+          output.add(rs.getString("name"));
+        }
+
+        attributes.put("results", output);
+        return new ModelAndView(attributes, "index.ftl");
+      } catch (Exception e) {
+        attributes.put("message", "There was an error: " + e);
+        return new ModelAndView(attributes, "error.ftl");
+      }
+    });
   }
 
 }
