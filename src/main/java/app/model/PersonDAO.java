@@ -20,6 +20,8 @@ public class PersonDAO{
   private HikariConfig config = null;
   private HikariDataSource dataSource = null;
 
+  private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS persons (id serial primary key, name varchar(255))";
+
   protected PersonDAO(){
     config = new  HikariConfig();
     config.setJdbcUrl(System.getenv("JDBC_DATABASE_URL"));
@@ -37,10 +39,11 @@ public class PersonDAO{
   public void createPerson(String name) throws Exception{
     Connection connection = dataSource.getConnection();
     Statement stmt = connection.createStatement();
-    stmt.executeUpdate("CREATE TABLE IF NOT EXISTS persons (id serial primary key, name varchar(255))");
+    stmt.executeUpdate(CREATE_TABLE_SQL);
 
     // insert
-    String insertSql = "INSERT INTO persons (name) VALUES (%s)";
+    System.out.println("going to add name: " + name);
+    String insertSql = "INSERT INTO persons (name) VALUES ('%s')";
     insertSql = String.format(insertSql, name);
     stmt.executeUpdate(insertSql);
   }
@@ -48,7 +51,7 @@ public class PersonDAO{
   public ArrayList<PersonDTO> getPeople() throws Exception{
     Connection connection = dataSource.getConnection();
     Statement stmt = connection.createStatement();
-    stmt.executeUpdate("CREATE TABLE IF NOT EXISTS persons (id serial primary key, name varchar(255))");
+    stmt.executeUpdate(CREATE_TABLE_SQL);
 
     ResultSet rs = stmt.executeQuery("SELECT id, name FROM persons");
     ArrayList<PersonDTO> output = new ArrayList<PersonDTO>();

@@ -1,6 +1,4 @@
 import com.google.gson.Gson;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 
@@ -32,7 +30,7 @@ public class Main {
     before((request,response)->{
       String method = request.requestMethod();
       // login
-      System.out.println("path: " + request.pathInfo());
+      System.out.println("method: " + method + " path: " + request.pathInfo());
       if((method.equals("GET")) || (request.pathInfo().equals(SESSIONS_URL))){
         // do nothing
       }
@@ -68,7 +66,10 @@ public class Main {
 
     post(SESSIONS_URL, (req, res) -> {
       Map<String, Object> model = new HashMap<>();
-      credentialManager.signInUser(req);
+
+      String username = req.queryParams("username");
+      String password = req.queryParams("password"); 
+      credentialManager.signInUser(username, password);
       if(credentialManager.getAuthenticated()){
         return new ModelAndView(model, "index.ftl");
       }
@@ -79,7 +80,7 @@ public class Main {
     }, new FreeMarkerEngine());
 
 
-    // CRUD
+    // INDEX
     get("/", (request, response) -> {
       Map<String, Object> model = new HashMap<>();
       if(credentialManager.getAuthenticated()){
@@ -91,56 +92,9 @@ public class Main {
       }
     }, new FreeMarkerEngine());
 
-    HikariConfig config = new  HikariConfig();
-    config.setJdbcUrl(System.getenv("JDBC_DATABASE_URL"));
-    final HikariDataSource dataSource = (config.getJdbcUrl() != null) ?
-      new HikariDataSource(config) : new HikariDataSource();
-
-    get("/db", (req, res) -> {
-      Map<String, Object> attributes = new HashMap<>();
-      try(Connection connection = dataSource.getConnection()) {
-        Statement stmt = connection.createStatement();
-        stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-        stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
-        ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
-
-        ArrayList<String> output = new ArrayList<String>();
-        while (rs.next()) {
-          output.add( "Read from DB: " + rs.getTimestamp("tick"));
-        }
-
-        attributes.put("results", output);
-        return new ModelAndView(attributes, "db.ftl");
-      } catch (Exception e) {
-        attributes.put("message", "There was an error: " + e);
-        return new ModelAndView(attributes, "error.ftl");
-      }
-    }, new FreeMarkerEngine());
-
-/*
-    get("/persons", (req, res) -> {
-      //res.type("application/json");
-      //return "{\"message\":5}";
-      Map<String, Object> attributes = new HashMap<>();
-      try(Connection connection = dataSource.getConnection()) {
-        Statement stmt = connection.createStatement();
-        stmt.executeUpdate("CREATE TABLE IF NOT EXISTS persons (name string)");
-        ResultSet rs = stmt.executeQuery("SELECT name FROM persons");
-
-        ArrayList<String> output = new ArrayList<String>();
-        while (rs.next()) {
-          output.add(rs.getString("name"));
-        }
-
-        attributes.put("results", output);
-        return new ModelAndView(attributes, "index.ftl");
-      } catch (Exception e) {
-        attributes.put("message", "There was an error: " + e);
-        return new ModelAndView(attributes, "error.ftl");
-      }
-    });
-*/
-    get("/persons", (req, res) -> {
+    // CRUD
+    // GET /persons
+    get(PERSONS_URL, (req, res) -> {
       Map<String, Object> model = new HashMap<>();
       try {
         //return "{\"message\":5}";
@@ -148,9 +102,26 @@ public class Main {
         res.type("application/json");
         return people;
       } catch (Exception e) {
-        return null;
+        res.status(500);
+        return "{\"status\":\"fail\"}";
       }
     }, gson::toJson);
+
+    // POST /persons
+    post(PERSONS_URL, (req, res) -> {
+        res.type("application/json");
+      Map<String, Object> model = new HashMap<>();
+      try {
+        String name = req.queryParams("name"); 
+        System.out.println("data: " + name + " body: " + req.body() + " data: " + req.attribute("data") + " all attrs: " + req.attributes());
+        personDao.createPerson(name);
+        res.status(200);
+        return "{\"status\":\"succeed\"}";
+      } catch (Exception e) {
+        res.status(500);
+        return "{\"status\":\"fail\"}";
+      }
+    });
 
   }
 

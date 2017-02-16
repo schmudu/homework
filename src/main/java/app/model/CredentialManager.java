@@ -27,10 +27,7 @@ public class CredentialManager{
     authenticated = false;
   }
 
-  public void signInUser(Request request){
-    String username = request.queryParams("username");
-    String password = request.queryParams("password"); 
-
+  public void signInUser(String username, String password){
     // do nothing if no credentials
     if ((username == null) || (password == null) ||
       (username == "") || (password == "")){

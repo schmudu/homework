@@ -1,6 +1,7 @@
 // Define the `homeworkApp` module
-var homeworkApp = angular.module('homeworkApp', [])
+var homeworkApp = angular.module('homeworkApp', []);
 
+// FACTORY
 homeworkApp.factory("personsFactory", ['$http', function($http){
   var personsFactory = {};
 
@@ -13,29 +14,15 @@ homeworkApp.factory("personsFactory", ['$http', function($http){
 
   personsFactory.createPerson = function(name){
     return $http({
-      method: "get",
-      url: "/limits/email"
-    });
-  };
-
-  /*
-  personsFactory.sendReferralList = function(listSlug, emailAddresses){
-    var data = {
-      "email_addresses" : emailAddresses
-    };
-
-    return $http({
       method: "post",
-      url: "/referral_lists/" + listSlug + "/email",
-      data: data
+      url: "/persons?name="+name,
     });
   };
-  */
 
   return personsFactory;
 }]);
 
-// Define the `PhoneListController` controller on the `homeworkApp` module
+// CONTROLLER
 homeworkApp.controller('PeopleController', ['$scope', 'personsFactory', function PeopleController($scope, personsFactory) {
   $scope.errorMsg = false;
 
@@ -56,42 +43,30 @@ homeworkApp.controller('PeopleController', ['$scope', 'personsFactory', function
   $scope.createPerson = function(){
     personsFactory.createPerson($scope.newName)
       .then(function successCallback(response){
-        console.log("person created: " + $scope.newName);
+        // update list
+        $scope.refreshPeople();
+
+        // clear input
+        $scope.newName = "";
       }, function errorCallback(response){
         setErrorMsg("Due to a technical error we were unable to " +
           "retrieve the pricing bands.");
       });
-    console.log("going to create person with name: " + $scope.newName);
   };
 
   $scope.refreshPeople = function(){
     personsFactory.getPeople()
       .then (function successCallback(response){
         $scope.people = response.data;
-        console.log("got people: " + $scope.people);
       }, function errorCallback(response){
         setErrorMsg("Due to a technical error we were unable to " +
           "retrieve the name from the database.");
       });
-    console.log("going to create person with name: " + $scope.newName);
   };
 
   function setErrorMsg(msg){
     $scope.errorMsg = true;
     $scope.errorMsgValue = msg;
   }
-
-  $scope.phones = [
-    {
-      name: 'Nexus S',
-      snippet: 'Fast just got faster with Nexus S.'
-    }, {
-      name: 'Motorola XOOM™ with Wi-Fi',
-      snippet: 'The Next, Next Generation tablet.'
-    }, {
-      name: 'MOTOROLA XOOM™',
-      snippet: 'The Next, Next Generation tablet.'
-    }
-  ];
 }]);
 

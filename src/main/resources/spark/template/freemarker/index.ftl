@@ -36,7 +36,7 @@
               </form>
               <br/>
               <table class="table table-striped">
-                <tr ng-repeat="person in people">
+                <tr ng-repeat="person in people | orderBy:'name'">
                   <td> {{person.name}} </td>
                 </tr>
               </table>
