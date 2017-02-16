@@ -2,14 +2,11 @@
 var homeworkApp = angular.module('homeworkApp', []);
 
 // MAIN CONTROLLER
-homeworkApp.controller('PersonsController', ['$scope', '$interval', 'personsFactory', function PersonsController($scope, $interval, personsFactory) {
+homeworkApp.controller('PersonsController', ['$scope', 'personsFactory', function PersonsController($scope, personsFactory) {
   $scope.errorMsg = false;
 
   $scope.init = function(){
     $scope.refreshPeople();
-
-    // automatically retrieve users every 5 seconds
-    $interval($scope.refreshPeople,5000);
   };
 
   $scope.disableCreatePerson = function(){
@@ -54,7 +51,6 @@ homeworkApp.controller('PersonsController', ['$scope', '$interval', 'personsFact
   };
 
   $scope.refreshPeople = function(){
-    console.log("getting new people");
     personsFactory.getPeople()
       .then (function successCallback(response){
         $scope.people = response.data;
