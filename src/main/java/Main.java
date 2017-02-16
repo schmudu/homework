@@ -1,8 +1,3 @@
-import static javax.measure.unit.SI.KILOGRAM;
-import javax.measure.quantity.Mass;
-import org.jscience.physics.model.RelativisticModel;
-import org.jscience.physics.amount.Amount;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import spark.ModelAndView;
@@ -11,33 +6,84 @@ import spark.template.freemarker.FreeMarkerEngine;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.lang.Boolean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import app.model.CredentialManager;
+import static app.model.Routes.*;
 
 import static spark.Spark.*;
 
 public class Main {
 
   public static void main(String[] args) {
+    CredentialManager credentialManager = CredentialManager.getInstance();
 
     port(Integer.valueOf(System.getenv("PORT")));
     staticFileLocation("/public");
 
-    get("/hello", (req, res) -> {
-      RelativisticModel.select();
-
-      String energy = System.getenv().get("ENERGY");
-
-      Amount<Mass> m = Amount.valueOf(energy).to(KILOGRAM);
-      return "E=mc^2: " + energy + " = " + m.toString();
+    before((request,response)->{
+      String method = request.requestMethod();
+      // login
+      System.out.println("path: " + request.pathInfo());
+      if((method.equals("GET")) || (request.pathInfo().equals(SESSIONS_URL))){
+        // do nothing
+      }
+      else{
+        if(method.equals("POST") || 
+            method.equals("PUT") || method.equals("DELETE")){
+          Boolean authenticated = credentialManager.getAuthenticated();
+          if(authenticated == false){
+            halt(401, "You are not welcome here. Please visit /login page to continue.");
+          }
+        }
+      }
     });
 
-    get("/", (request, response) -> {
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("message", "Hello World!");
+    // LOGIN/LOGOUT
+    get(LOGIN_URL, (req, res) -> {
+      Map<String, Object> model = new HashMap<>();
+      model.put("message", "Please login to continue.");
+      return new ModelAndView(model, "login.ftl");
+    }, new FreeMarkerEngine());
 
-        return new ModelAndView(attributes, "index.ftl");
+    get(SESSIONS_URL, (req, res) -> {
+      Map<String, Object> model = new HashMap<>();
+      if(req.queryParams("_method").equals("DELETE")){
+        credentialManager.signOutUser();
+        model.put("message", "You have been signed out.");
+        return new ModelAndView(model, "login.ftl");
+      }
+      else{
+        return new ModelAndView(model, "index.ftl");
+      }
+    }, new FreeMarkerEngine());
+
+    post(SESSIONS_URL, (req, res) -> {
+      Map<String, Object> model = new HashMap<>();
+      credentialManager.signInUser(req);
+      if(credentialManager.getAuthenticated()){
+        return new ModelAndView(model, "index.ftl");
+      }
+      else{
+        model.put("message", "Please login to continue.");
+        return new ModelAndView(model, "login.ftl");
+      }
+    }, new FreeMarkerEngine());
+
+
+    // CRUD
+    get("/", (request, response) -> {
+      Map<String, Object> model = new HashMap<>();
+      if(credentialManager.getAuthenticated()){
+        return new ModelAndView(model, "index.ftl");
+      }
+      else{
+        model.put("message", "Please login to continue.");
+        return new ModelAndView(model, "login.ftl");
+      }
     }, new FreeMarkerEngine());
 
     HikariConfig config = new  HikariConfig();
