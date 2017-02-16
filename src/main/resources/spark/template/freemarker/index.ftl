@@ -29,7 +29,7 @@
             <div class="col-md-11 col-md-offset-1">
               <form class="form-inline">
                 <label class="sr-only" for="inlineFormInput">Name</label>
-                <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="inlineFormInput" placeholder="Jane Doe" ng-model="newName">
+                <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="inlineFormInput" placeholder="Enter Name" ng-model="newName">
                 <button type="submit" class="btn btn-primary" ng-disabled="disableCreatePerson()" ng-click="createPerson()">
                   <span class="glyphicon glyphicon-plus"></span>
                   Create Person
