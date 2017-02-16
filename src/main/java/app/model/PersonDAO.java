@@ -23,6 +23,8 @@ public class PersonDAO{
   private static final String COMMAND_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS persons (id serial primary key, name varchar(255))";
   private static final String COMMAND_CREATE_PERSON = "INSERT INTO persons (name) VALUES ('%s')";
   private static final String COMMAND_DELETE_PERSON = "DELETE FROM persons WHERE id=%d";
+  private static final String COMMAND_UPDATE_PERSON = "UPDATE persons SET name='%s' WHERE id=%d";
+  private static final String COMMAND_SELECT_PERSONS = "SELECT id, name FROM persons";
 
   protected PersonDAO(){
     config = new  HikariConfig();
@@ -40,8 +42,14 @@ public class PersonDAO{
 
   public void deletePerson(int id) throws Exception{
     Statement stmt = generateSqlStatement();
-    System.out.println("going to delete: " + id);
     String deleteSql = String.format(COMMAND_DELETE_PERSON, id);
+    stmt.executeUpdate(deleteSql);
+  }
+
+  public void updatePerson(int id, String name) throws Exception{
+    Statement stmt = generateSqlStatement();
+    System.out.println("going to update id: " + id + " with name: " + name);
+    String deleteSql = String.format(COMMAND_UPDATE_PERSON, name, id);
     stmt.executeUpdate(deleteSql);
   }
 
@@ -53,7 +61,7 @@ public class PersonDAO{
 
   public ArrayList<PersonDTO> getPeople() throws Exception{
     Statement stmt = generateSqlStatement();
-    ResultSet rs = stmt.executeQuery("SELECT id, name FROM persons");
+    ResultSet rs = stmt.executeQuery(COMMAND_SELECT_PERSONS);
     ArrayList<PersonDTO> output = new ArrayList<PersonDTO>();
     while (rs.next()) {
       output.add(new PersonDTO(rs.getInt("id"), rs.getString("name")));

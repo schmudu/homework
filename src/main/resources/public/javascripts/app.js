@@ -26,11 +26,19 @@ homeworkApp.factory("personsFactory", ['$http', function($http){
     });
   };
 
+
+  personsFactory.updatePerson = function(personId, personName){
+    return $http({
+      method: "put",
+      url: "/persons/" + personId + "?name=" + personName
+    });
+  };
+
   return personsFactory;
 }]);
 
-// CONTROLLER
-homeworkApp.controller('PeopleController', ['$scope', 'personsFactory', function PeopleController($scope, personsFactory) {
+// MAIN CONTROLLER
+homeworkApp.controller('PersonsController', ['$scope', 'personsFactory', function PersonsController($scope, personsFactory) {
   $scope.errorMsg = false;
 
   $scope.init = function(){
@@ -72,8 +80,11 @@ homeworkApp.controller('PeopleController', ['$scope', 'personsFactory', function
       });
   };
 
-  $scope.editPerson = function(personId, personName){
-      $("#editPersonModal").modal("show");
+  $scope.showEditPersonModal = function(personId, personName){
+    $scope.updatedName = personName;
+    $scope.selectedPersonName = personName;
+    $scope.selectedPersonId = personId;
+    $("#editPersonModal").modal("show");
   };
 
   $scope.refreshPeople = function(){
@@ -92,3 +103,44 @@ homeworkApp.controller('PeopleController', ['$scope', 'personsFactory', function
   }
 }]);
 
+// EDIT PERSON CONTROLLER
+homeworkApp.controller('EditPersonsController', ['$scope', 'personsFactory', function PeopleController($scope, personsFactory) {
+  $scope.updatingName = false;
+  $scope.errorMsg = false;
+
+  $('#editPersonModal').on('shown.bs.modal', function() {
+    $("#editPersonInput").select();
+  });
+
+  $scope.updateName = function(){
+    personsFactory.updatePerson($scope.selectedPersonId, $scope.updatedName)
+      .then (function successCallback(response){
+        $scope.errorMsg = false;
+        $scope.updatingName = false;
+        $scope.closeModal();
+        $scope.refreshPeople();
+      }, function errorCallback(response){
+        setErrorMsg("Due to a technical error we were unable to " +
+          "retrieve the names from the database.");
+      });
+  };
+
+  $scope.disabledUpdateName = function(){
+    if(($scope.updatedName === undefined) ||
+      ($scope.updatedName === "") ||
+      ($scope.updatedName === $scope.selectedPersonName) ||
+      ($scope.updatingName === true)){
+      return true;
+    }
+    return false;
+  };
+
+  $scope.closeModal = function(){
+    $("#editPersonModal").modal("hide");
+  };
+
+  function setErrorMsg(msg){
+    $scope.errorMsg = true;
+    $scope.errorMsgContent = msg;
+  }
+}]);

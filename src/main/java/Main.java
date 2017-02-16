@@ -124,11 +124,27 @@ public class Main {
 
     // DELETE /person/:id
     delete(PERSONS_URL, (req, res) -> {
-        res.type("application/json");
+      res.type("application/json");
       Map<String, Object> model = new HashMap<>();
       try {
         int id = Integer.parseInt(req.queryParams("id")); 
         personDao.deletePerson(id);
+        res.status(200);
+        return "{\"status\":\"succeed\"}";
+      } catch (Exception e) {
+        res.status(500);
+        return "{\"status\":\"fail\"}";
+      }
+    });
+
+    // PUT /person/:id
+    put("/persons/:id", (req, res) -> {
+      res.type("application/json");
+      Map<String, Object> model = new HashMap<>();
+      try {
+        int id = Integer.parseInt(req.params(":id")); 
+        String name = req.queryParams("name"); 
+        personDao.updatePerson(id, name);
         res.status(200);
         return "{\"status\":\"succeed\"}";
       } catch (Exception e) {
