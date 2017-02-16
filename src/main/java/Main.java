@@ -29,7 +29,7 @@ public class Main {
 
     before((request,response)->{
       String method = request.requestMethod();
-      // login
+      // LOG REQUEST
       System.out.println("method: " + method + " path: " + request.pathInfo());
       if((method.equals("GET")) || (request.pathInfo().equals(SESSIONS_URL))){
         // do nothing
@@ -123,11 +123,11 @@ public class Main {
     });
 
     // DELETE /person/:id
-    delete(PERSONS_URL, (req, res) -> {
+    delete(PERSONS_URL_ID, (req, res) -> {
       res.type("application/json");
       Map<String, Object> model = new HashMap<>();
       try {
-        int id = Integer.parseInt(req.queryParams("id")); 
+        int id = Integer.parseInt(req.params(":id")); 
         personDao.deletePerson(id);
         res.status(200);
         return "{\"status\":\"succeed\"}";
@@ -138,7 +138,7 @@ public class Main {
     });
 
     // PUT /person/:id
-    put("/persons/:id", (req, res) -> {
+    put(PERSONS_URL_ID, (req, res) -> {
       res.type("application/json");
       Map<String, Object> model = new HashMap<>();
       try {

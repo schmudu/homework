@@ -48,7 +48,6 @@ public class PersonDAO{
 
   public void updatePerson(int id, String name) throws Exception{
     Statement stmt = generateSqlStatement();
-    System.out.println("going to update id: " + id + " with name: " + name);
     String deleteSql = String.format(COMMAND_UPDATE_PERSON, name, id);
     stmt.executeUpdate(deleteSql);
   }

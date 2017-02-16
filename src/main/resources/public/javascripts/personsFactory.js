@@ -21,7 +21,7 @@ homeworkApp.factory("personsFactory", ['$http', function($http){
   personsFactory.deletePerson = function(id){
     return $http({
       method: "delete",
-      url: "/persons?id="+id,
+      url: "/persons/"+id,
     });
   };
 

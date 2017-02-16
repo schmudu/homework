@@ -6,7 +6,6 @@ homeworkApp.controller('PersonsController', ['$scope', 'personsFactory', functio
   $scope.errorMsg = false;
 
   $scope.init = function(){
-    console.log("initing.");
     $scope.refreshPeople();
   };
 

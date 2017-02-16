@@ -46,6 +46,7 @@ public class CredentialManager{
   private ArrayList<Credential> createCredentials(){
     ArrayList<Credential> credentials = new ArrayList();
     credentials.add(new Credential("JEFF", "SUPERPASS"));
+    credentials.add(new Credential("JEFF2", "SUPERPASS"));
     return credentials;
   }
 }
