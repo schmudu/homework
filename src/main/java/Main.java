@@ -143,7 +143,6 @@ public class Main {
     get("/persons", (req, res) -> {
       Map<String, Object> model = new HashMap<>();
       try {
-        //res.type("application/json");
         //return "{\"message\":5}";
         ArrayList<PersonDTO> people = personDao.getPeople();
         res.type("application/json");

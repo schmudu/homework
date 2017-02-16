@@ -23,22 +23,21 @@
             </div>
           </div>
         </div>
-        <div class="testContainer" ng-app="homeworkApp" ng-controller="PeopleController">
-          {{1+3}}
+        <div class="testContainer" ng-app="homeworkApp" ng-controller="PeopleController" ng-init="init()">
           <div class="rows">
             <div class="col-md-11 col-md-offset-1">
               <form class="form-inline">
                 <label class="sr-only" for="inlineFormInput">Name</label>
-                <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="inlineFormInput" placeholder="Jane Doe">
-                <button type="submit" class="btn btn-primary">
+                <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="inlineFormInput" placeholder="Jane Doe" ng-model="newName">
+                <button type="submit" class="btn btn-primary" ng-disabled="disableCreatePerson()" ng-click="createPerson()">
                   <span class="glyphicon glyphicon-plus"></span>
                   Create Person
                 </button>
               </form>
               <br/>
               <table class="table table-striped">
-                <tr>
-                  <td> Hello </td>
+                <tr ng-repeat="person in people">
+                  <td> {{person.name}} </td>
                 </tr>
               </table>
             </div>
