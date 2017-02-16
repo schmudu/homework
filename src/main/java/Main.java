@@ -18,6 +18,8 @@ import static spark.Spark.*;
 public class Main {
 
   public static void main(String[] args) {
+    final String RESPONSE_SUCCESS  = "{\"status\":\"succeed\"}";
+    final String RESPONSE_FAIL     = "{\"status\":\"fail\"}";    
     CredentialManager credentialManager = CredentialManager.getInstance();
     PersonDAO personDao = PersonDAO.getInstance();
 
@@ -115,10 +117,10 @@ public class Main {
         String name = req.queryParams("name"); 
         personDao.createPerson(name);
         res.status(200);
-        return "{\"status\":\"succeed\"}";
+        return RESPONSE_SUCCESS;
       } catch (Exception e) {
         res.status(500);
-        return "{\"status\":\"fail\"}";
+        return RESPONSE_FAIL;
       }
     });
 
@@ -130,10 +132,10 @@ public class Main {
         int id = Integer.parseInt(req.params(":id")); 
         personDao.deletePerson(id);
         res.status(200);
-        return "{\"status\":\"succeed\"}";
+        return RESPONSE_SUCCESS;
       } catch (Exception e) {
         res.status(500);
-        return "{\"status\":\"fail\"}";
+        return RESPONSE_FAIL;
       }
     });
 
@@ -146,10 +148,10 @@ public class Main {
         String name = req.queryParams("name"); 
         personDao.updatePerson(id, name);
         res.status(200);
-        return "{\"status\":\"succeed\"}";
+        return RESPONSE_SUCCESS;
       } catch (Exception e) {
         res.status(500);
-        return "{\"status\":\"fail\"}";
+        return RESPONSE_FAIL;
       }
     });
 

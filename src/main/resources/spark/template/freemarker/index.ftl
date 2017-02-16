@@ -16,7 +16,7 @@
           </button>
           <input type="hidden" name="_method" value="DELETE"/>
         </form>
-        <div class="rows">
+        <div class="row">
           <div class="col-md-12">
             <div class="page-header text-center">
               <h1>Patrick's Homework</h1>
@@ -25,7 +25,7 @@
         </div>
         <div class="testContainer" ng-app="homeworkApp" ng-controller="PersonsController" ng-init="init()">
           <#include "edit_person.ftl">
-          <div class="rows">
+          <div class="row">
             <div class="col-md-11 col-md-offset-1">
               <form class="form-inline">
                 <label class="sr-only" for="inlineFormInput">Name</label>
