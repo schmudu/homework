@@ -53,20 +53,8 @@ public class PersonDAO{
       System.out.println("Exception deleting person: " + e);
     }
     finally{
-      try{ 
-        if(dataSource != null){
-          dataSource.close(); 
-        }
-      } catch(Exception e){ 
-        System.out.println("Exception closing connection while deleting person: " + e); 
-      }
-      try{ 
-        if(connection != null){
-          connection.close(); 
-        }
-      } catch(Exception e){ 
-        System.out.println("Exception closing connection while generating SQL statement: " + e); 
-      }
+      DbUtilities.closeDataSource(dataSource);
+      DbUtilities.closeSqlConnection(connection);
     }
   }
 
@@ -86,20 +74,8 @@ public class PersonDAO{
       System.out.println("Exception deleting person: " + e);
     }
     finally{
-      try{ 
-        if(dataSource != null){
-          dataSource.close(); 
-        }
-      } catch(Exception e){ 
-        System.out.println("Exception closing connection while deleting person: " + e); 
-      }
-      try{ 
-        if(connection != null){
-          connection.close(); 
-        }
-      } catch(Exception e){ 
-        System.out.println("Exception closing connection while generating SQL statement: " + e); 
-      }
+      DbUtilities.closeDataSource(dataSource);
+      DbUtilities.closeSqlConnection(connection);
     }
   }
 
@@ -120,20 +96,8 @@ public class PersonDAO{
       System.out.println("Exception creating person: " + e);
     }
     finally{
-      try{ 
-        if(dataSource != null){
-          dataSource.close(); 
-        }
-      } catch(Exception e){ 
-        System.out.println("Exception closing connection while creating person: " + e); 
-      }
-      try{ 
-        if(connection != null){
-          connection.close(); 
-        }
-      } catch(Exception e){ 
-        System.out.println("Exception closing connection while generating SQL statement: " + e); 
-      }
+      DbUtilities.closeDataSource(dataSource);
+      DbUtilities.closeSqlConnection(connection);
     }
   }
 
@@ -160,27 +124,9 @@ public class PersonDAO{
       System.out.println("Exception creating person: " + e);
     }
     finally{
-      try{ 
-        if(dataSource != null){
-          dataSource.close(); 
-        }
-      } catch(Exception e){ 
-        System.out.println("Exception closing connection while getting everyone: " + e); 
-      }
-      try{ 
-        if(rs != null){
-          rs.close(); 
-        }
-      } catch(Exception e){ 
-        System.out.println("Exception closing connection while getting everyone: " + e); 
-      }
-      try{ 
-        if(connection != null){
-          connection.close(); 
-        }
-      } catch(Exception e){ 
-        System.out.println("Exception closing connection while generating SQL statement: " + e); 
-      }
+      DbUtilities.closeDataSource(dataSource);
+      DbUtilities.closeSqlConnection(connection);
+      DbUtilities.closeResultSet(rs);
     }
     return output;
   }
