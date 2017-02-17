@@ -2,11 +2,14 @@
 var homeworkApp = angular.module('homeworkApp', []);
 
 // MAIN CONTROLLER
-homeworkApp.controller('PersonsController', ['$scope', 'personsFactory', function PersonsController($scope, personsFactory) {
+homeworkApp.controller('PersonsController', ['$scope', '$interval', 'personsFactory', function PersonsController($scope, $interval, personsFactory) {
   $scope.errorMsg = false;
 
   $scope.init = function(){
     $scope.refreshPeople();
+    
+    // refresh the people every 5 seconds
+    $interval($scope.refreshPeople, 5000);
   };
 
   $scope.disableCreatePerson = function(){
